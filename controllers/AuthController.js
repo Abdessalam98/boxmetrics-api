@@ -38,7 +38,7 @@ module.exports = {
 					if (!isValidPassword) return res.status(401).send({ auth: false, token: null });
 
 					let token = jwt.sign({ id: user.id }, jwtSecret, {
-						expiresIn: 86400 // expires in 24 hours
+						expiresIn: 86400
 					});
 
 					res.status(200).send({ auth: true, token: token, user: user });
@@ -77,8 +77,10 @@ module.exports = {
 						});
 						return;
 					}
-
-					res.status(201).json(user);
+					let token = jwt.sign({ id: user.id }, jwtSecret, {
+						expiresIn: 86400
+					});
+					res.status(200).send({ auth: true, token: token });
 				});
 			}
 		});
