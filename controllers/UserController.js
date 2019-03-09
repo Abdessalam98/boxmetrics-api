@@ -10,7 +10,6 @@ module.exports = {
 			}
 			res.status(200).json({
 				count: users.length,
-				// Test ID
 				users: users.map((x) => x._id)
 			});
 		});
