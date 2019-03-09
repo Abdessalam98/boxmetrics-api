@@ -1,5 +1,4 @@
 const User = require("../models/User");
-
 module.exports = {
 	index: (req, res) => {
 		User.find({}).exec((err, users) => {
