@@ -1,31 +1,39 @@
 const mongoose = require("mongoose");
 
-module.exports = mongoose.model("User", {
-	username: {
+module.exports = mongoose.model("Server", {
+	name: {
 		type: String,
 		unique: true,
 		required: true
 	},
-	email: {
+	host: {
 		type: String,
-		unique: true,
+		required: true
+	},
+	port: {
+		type: String,
+		required: true
+	},
+	username: {
+		type: String,
 		required: true
 	},
 	password: {
 		type: String,
 		required: true
 	},
+	privateKey: {
+		type: String,
+	},
 	status: {
 		type: String,
 		enum: ["active", "inactive", "disabled", "locked", "expired"],
 		default: "inactive"
 	},
-	servers:[
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Server",
-		}
-	],
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+	},
 	lastConnection: { type: Date, default: Date.now },
 	createdOn: { type: Date, default: Date.now },
 	updatedOn: { type: Date, default: Date.now }

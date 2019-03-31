@@ -36,6 +36,7 @@ mongoose.connect(process.env.DB_URL, { useCreateIndex: true, useNewUrlParser: tr
 	if (error) {
 		throw error;
 	}
+	// eslint-disable-next-line no-console
 	console.log("🚀 Successfully connected to database !");
 });
 //express validator
