@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Server = require("../models/Server");
 
 module.exports = {
 	isUniqueUsername: (value) => {
@@ -28,5 +29,19 @@ module.exports = {
 					resolve(err);
 				});
 		});
-	}
+	},
+	isUniqueServerName: (value) => {
+		return new Promise((resolve, reject) => {
+			Server.findOne({ name: value })
+				.then((server) => {
+					if (server !== null) {
+						return reject(server);
+					}
+					return resolve(true);
+				})
+				.catch((err) => {
+					resolve(err);
+				});
+		});
+	},
 };
