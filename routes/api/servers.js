@@ -1,5 +1,5 @@
 const router = require("express").Router(),
-	UserController = require("../../controllers/UserController"),
+	ServerController = require("../../controllers/ServerController"),
 	jwt = require("jsonwebtoken"),
 	jwtSecret = require("../../config/jwt");
 
@@ -16,5 +16,6 @@ router
 		});
 	})
 	.route("/")
-	.get(UserController.index);
+    .get(ServerController.index)
+    .post(ServerController.store);
 module.exports = router;

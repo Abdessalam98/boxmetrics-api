@@ -12,7 +12,7 @@ module.exports = {
 		req.check("email", "Email is not valid").isEmail();
 		req.check("password", "Password is required").notEmpty();
 		// eslint-disable-next-line no-unused-vars
-		const validation = req.getValidationResult().then((err) => {
+		const validation = req.getValidationResult().then(err => {
 			const errors = err.array();
 			if (!err.isEmpty()) {
 				res.status(500).json({
@@ -49,18 +49,15 @@ module.exports = {
 	register: (req, res) => {
 		const body = req.body;
 
-		req.check("firstName", "Firstname is required").notEmpty();
-		req.check("lastName", "Lastname is required").notEmpty();
 		req.check("username", "Username is required").notEmpty();
 		req.check("username", "Username exists already").isUniqueUsername();
 		req.check("email", "Email is required").notEmpty();
 		req.check("email", "Email is not valid").isEmail();
 		req.check("email", "Email exists already").isUniqueEmail();
 		req.check("password", "Password is required").notEmpty();
-		req.check("confirmPassword", "Passwords do not match").equals(body.password);
 
 		// eslint-disable-next-line no-unused-vars
-		const validation = req.getValidationResult().then((err) => {
+		const validation = req.getValidationResult().then(err => {
 			const errors = err.array();
 			if (!err.isEmpty()) {
 				res.status(500).json({
@@ -70,7 +67,7 @@ module.exports = {
 			} else {
 				body.password = bcrypt.hashSync(body.password, salt);
 				const user = new User(body);
-				user.save((err) => {
+				user.save(err => {
 					if (err) {
 						res.status(500).json({
 							errors: err

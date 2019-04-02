@@ -1,14 +1,6 @@
 const mongoose = require("mongoose");
 
 module.exports = mongoose.model("User", {
-	firstName: {
-		type: String,
-		required: true
-	},
-	lastName: {
-		type: String,
-		required: true
-	},
 	username: {
 		type: String,
 		unique: true,
@@ -25,9 +17,15 @@ module.exports = mongoose.model("User", {
 	},
 	status: {
 		type: String,
-		enum: [ "active", "inactive", "disabled", "locked", "expired" ],
+		enum: ["active", "inactive", "disabled", "locked", "expired"],
 		default: "inactive"
 	},
+	servers:[
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Server",
+		}
+	],
 	lastConnection: { type: Date, default: Date.now },
 	createdOn: { type: Date, default: Date.now },
 	updatedOn: { type: Date, default: Date.now }
