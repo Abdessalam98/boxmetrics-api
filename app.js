@@ -9,15 +9,10 @@ const dotenv = require("dotenv").config(),
 	helmet = require("helmet"),
 	expressValidator = require("express-validator"),
 	customValidators = require("./utils/customValidators"),
+	cors = require("cors"),
 	app = express();
 
-// CORS
-app.use((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, PUT, OPTIONS");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, X-Custom-Header");
-	next();
-});
+app.use(cors());
 
 // body-parser
 app.use(bodyParser.json());
