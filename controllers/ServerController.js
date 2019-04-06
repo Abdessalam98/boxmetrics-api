@@ -24,6 +24,7 @@ module.exports = {
 		req.check("name", "Name exists already").isUniqueServerName();
 		req.check("host", "Host is required").notEmpty();
 		req.check("port", "Port is required").notEmpty();
+		req.check("os", "OS is required").notEmpty();
 		req.check("username", "Username is required").notEmpty();
 		req.check("password", "Password is required").notEmpty();
 
