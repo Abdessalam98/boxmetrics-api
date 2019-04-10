@@ -1,0 +1,10 @@
+version: '2'
+services:
+   boxmetrics-api:
+      build: .
+      ports:
+        - "3000:3000"
+      env_file:
+        - .env
+      container_name: boxmetrics-api
+   
