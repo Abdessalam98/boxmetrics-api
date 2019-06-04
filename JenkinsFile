@@ -1,30 +1,26 @@
-pipeline {
- agent any
+node {
  stage('Checkout') {
   checkout scm
  }
  stage('Environment') {
-  steps {
-   sh 'git --version'
-   echo "Build number : env.BUILD_NUMBER"
-   sh 'docker -v'
-   sh 'docker ps'
-  }
+  sh 'git --version'
+  echo "Build number : ${env.BUILD_NUMBER}"
  }
  stage('Build and Push') {
-  steps {
-   withDockerRegistry(url: 'http://149.91.90.168:5000', credentialsId: 'e56a6c40-97c8-4a3c-afbb-ff7182917c31', ) {
-    app = docker.build("registry.labo-devops.ml/boxmetrics-api:${env.BUILD_NUMBER}")
+  withCredentials([string(credentialsId: 'SERVER', variable: 'SERVER')]) {
+   withDockerRegistry(url: 'http://${SERVER}', credentialsId: 'e56a6c40-97c8-4a3c-afbb-ff7182917c31', ) {
+    app = docker.build("${SERVER}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}")
     app.push()
    }
   }
  }
  stage('Deploy to Dev') {
-  steps {
-   sh 'docker ps'
-   sh 'docker stop boxmetrics-api'
-   sh 'docker rm boxmetrics-api'
-   sh 'docker run -d -p 82:80 --name boxmetrics-api registry.labo-devops.ml/boxmetrics-api:${env.BUILD_NUMBER}'
+withCredentials([string(credentialsId: 'SERVER', variable: 'SERVER')]) {
+  withDockerRegistry(url: 'http://${SERVER}', credentialsId: 'e56a6c40-97c8-4a3c-afbb-ff7182917c31', ) {
+  sh 'docker stop boxmetrics-api-dev || true' 
+  sh 'docker rm boxmetrics-api-dev || true '
+  sh "docker run -d -p 8181:8181 --env-file=/srv/boxmetrics/api/.env --name boxmetrics-api-dev ${SERVER}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
   }
+}
  }
 }
