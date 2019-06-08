@@ -10,6 +10,10 @@ module.exports = mongoose.model("Server", {
 		type: String,
 		required: true
 	},
+  os: {
+		type: String,
+		required: true
+	},
 	port: {
 		type: String,
 		required: true
