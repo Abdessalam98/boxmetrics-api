@@ -9,8 +9,8 @@ module.exports = mongoose.model("Server", {
 	host: {
 		type: String,
 		required: true
-	},
-  os: {
+    },
+    os: {
 		type: String,
 		required: true
 	},
