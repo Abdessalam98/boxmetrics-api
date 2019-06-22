@@ -5,7 +5,7 @@ const Server = require("../models/Server");
 module.exports = {
 	index: (req, res) => {
 		const { u } = req.query;
-		if(u) {
+		if (u) {
 			Server.find({})
 				.where("user")
 				.equals(u)
@@ -21,7 +21,7 @@ module.exports = {
 						servers
 					});
 				});
-		}else{
+		} else {
 			Server.find({}).exec((err, servers) => {
 				if (err) {
 					res.status(500).json({
@@ -67,6 +67,38 @@ module.exports = {
 					}
 				});
 			}
+		});
+	},
+	destroy: (req, res) => {
+		Server.findById(req.params.id, (err, server) => {
+			if (err) {
+				res.status(500).json({
+					error: err
+				});
+				return;
+			}
+			server.remove(err => {
+				if (err) {
+					res.status(500).json({
+						error: err
+					});
+					return;
+				}
+
+				res.status(204).json({});
+			});
+		});
+	},
+	show: (req, res) => {
+		Server.findById(req.params.id, (err, server) => {
+			if (err) {
+				res.status(500).json({
+					error: err
+				});
+				return;
+			}
+
+			res.status(200).json(server);
 		});
 	}
 };
