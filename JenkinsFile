@@ -1,26 +1,67 @@
-node {
- stage('Checkout') {
-  checkout scm
- }
- stage('Environment') {
-  sh 'git --version'
-  echo "Build number : ${env.BUILD_NUMBER}"
- }
- stage('Build and Push') {
-  withCredentials([string(credentialsId: 'SERVER', variable: 'SERVER')]) {
-   withDockerRegistry(url: 'http://${SERVER}', credentialsId: 'e56a6c40-97c8-4a3c-afbb-ff7182917c31', ) {
-    app = docker.build("${SERVER}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}")
-    app.push()
+pipeline {
+ agent any
+
+ stages {
+  stage('Checkout') {
+   steps {
+    echo 'Checkout..'
+    checkout scm
+   }
+  }
+  stage('Environement') {
+   steps {
+    echo 'Env..'
+    sh 'git --version'
+    echo "Build number : env.BUILD_NUMBER"
+    sh 'docker -v'
+    sh 'docker ps'
+   }
+  }
+  stage('Build') {
+   steps {
+    sh "docker build -t boxmetrics-api ."
+   }
+  }
+  stage('Deploy to Dev') {
+   when {
+    anyOf {
+     branch 'develop';
+     branch 'ci-cd'
+    }
+   }
+   steps {
+    echo 'Build and push'
+    withCredentials([string(credentialsId: 'SERVER', variable: 'SERVER')]) {
+     withDockerRegistry(credentialsId: 'ecr:us-west-2:aws-cred', url: 'https://${SERVER}') {
+      sh "docker tag boxmetrics-front ${SERVER}:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
+      sh "docker push ${SERVER}:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
+      sh 'docker ps'
+      sh 'docker stop boxmetrics-api-dev || true'
+      sh 'docker rm boxmetrics-api-dev'
+      sh "docker run -d -p 3000:3000 --env-file /srv/boxmetrics/api/.env --name boxmetrics-api-dev ${SERVER}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
+     }
+    }
+   }
+  }
+  stage('Deploy to Prod') {
+   when {
+    anyOf {
+     branch 'master'
+    }
+   }
+    steps {
+     echo 'Build and push to prod '
+     withCredentials([string(credentialsId: 'SERVER', variable: 'SERVER')]) {
+      withDockerRegistry(credentialsId: 'ecr:us-west-2:aws-cred', url: 'https://${SERVER}') {
+       sh "docker tag boxmetrics-api ${SERVER}:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
+       sh "docker push ${SERVER}:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
+       sh 'ssh prod-boxmetrics docker ps'
+       sh 'ssh prod-boxmetrics docker stop boxmetrics-api-prod || true'
+       sh 'ssh prod-boxmetrics docker rm boxmetrics-api-dev'
+       sh "ssh prod-boxmetrics docker run -d -p 8080:8080 --env-file /srv/boxmetrics/api/.env --name boxmetrics-api-prod ${REGISTRY}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
+      }
+     }
+    }
    }
   }
  }
- stage('Deploy to Dev') {
-withCredentials([string(credentialsId: 'SERVER', variable: 'SERVER')]) {
-  withDockerRegistry(url: 'http://${SERVER}', credentialsId: 'e56a6c40-97c8-4a3c-afbb-ff7182917c31', ) {
-  sh 'docker stop boxmetrics-api-dev || true' 
-  sh 'docker rm boxmetrics-api-dev || true '
-  sh "docker run -d -p 8181:8181 --env-file=/srv/boxmetrics/api/.env --name boxmetrics-api-dev ${SERVER}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
-  }
-}
- }
-}
