@@ -4,18 +4,37 @@ const Server = require("../models/Server");
 
 module.exports = {
 	index: (req, res) => {
-		Server.find({}).exec((err, servers) => {
-			if (err) {
-				res.status(500).json({
-					error: err
+		const { u } = req.query;
+		if(u) {
+			Server.find({})
+				.where("user")
+				.equals(u)
+				.exec((err, servers) => {
+					if (err) {
+						res.status(500).json({
+							error: err
+						});
+						return;
+					}
+					res.status(200).json({
+						count: servers.length,
+						servers
+					});
 				});
-				return;
-			}
-			res.status(200).json({
-				count: servers.length,
-				servers
+		}else{
+			Server.find({}).exec((err, servers) => {
+				if (err) {
+					res.status(500).json({
+						error: err
+					});
+					return;
+				}
+				res.status(200).json({
+					count: servers.length,
+					servers
+				});
 			});
-		});
+		}
 	},
 	store: (req, res) => {
 		const body = req.body;
