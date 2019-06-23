@@ -32,7 +32,7 @@ module.exports = mongoose.model("Server", {
 	status: {
 		type: String,
 		enum: ["active", "inactive", "disabled", "locked", "expired"],
-		default: "inactive"
+		default: "active"
 	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
