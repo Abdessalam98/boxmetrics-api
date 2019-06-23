@@ -18,7 +18,7 @@ module.exports = mongoose.model("User", {
 	status: {
 		type: String,
 		enum: ["active", "inactive", "disabled", "locked", "expired"],
-		default: "inactive"
+		default: "active"
 	},
 	servers:[
 		{
