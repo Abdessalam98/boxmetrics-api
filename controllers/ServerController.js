@@ -4,18 +4,37 @@ const Server = require("../models/Server");
 
 module.exports = {
 	index: (req, res) => {
-		Server.find({}).exec((err, servers) => {
-			if (err) {
-				res.status(500).json({
-					error: err
+		const { u } = req.query;
+		if (u) {
+			Server.find({})
+				.where("user")
+				.equals(u)
+				.exec((err, servers) => {
+					if (err) {
+						res.status(500).json({
+							error: err
+						});
+						return;
+					}
+					res.status(200).json({
+						count: servers.length,
+						servers
+					});
 				});
-				return;
-			}
-			res.status(200).json({
-				count: servers.length,
-				servers
+		} else {
+			Server.find({}).exec((err, servers) => {
+				if (err) {
+					res.status(500).json({
+						error: err
+					});
+					return;
+				}
+				res.status(200).json({
+					count: servers.length,
+					servers
+				});
 			});
-		});
+		}
 	},
 	store: (req, res) => {
 		const body = req.body;
@@ -24,6 +43,7 @@ module.exports = {
 		req.check("name", "Name exists already").isUniqueServerName();
 		req.check("host", "Host is required").notEmpty();
 		req.check("port", "Port is required").notEmpty();
+		req.check("os", "OS is required").notEmpty();
 		req.check("username", "Username is required").notEmpty();
 		req.check("password", "Password is required").notEmpty();
 
@@ -47,6 +67,38 @@ module.exports = {
 					}
 				});
 			}
+		});
+	},
+	destroy: (req, res) => {
+		Server.findById(req.params.id, (err, server) => {
+			if (err) {
+				res.status(500).json({
+					error: err
+				});
+				return;
+			}
+			server.remove(err => {
+				if (err) {
+					res.status(500).json({
+						error: err
+					});
+					return;
+				}
+
+				res.status(204).json({});
+			});
+		});
+	},
+	show: (req, res) => {
+		Server.findById(req.params.id, (err, server) => {
+			if (err) {
+				res.status(500).json({
+					error: err
+				});
+				return;
+			}
+
+			res.status(200).json(server);
 		});
 	}
 };
