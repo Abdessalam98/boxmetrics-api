@@ -100,5 +100,22 @@ module.exports = {
 
 			res.status(200).json(server);
 		});
+	},
+	update:(req,res) => {
+		const body = req.body;
+		Server.findByIdAndUpdate(
+			req.params.id,
+			{ $set: body },
+			{ new: true },
+			(err, server) => {
+				if (err) {
+					res.status(500).json({
+						error: err
+					});
+					return;
+				}
+				res.status(202).json(server);
+			}
+		);
 	}
 };

@@ -38,7 +38,7 @@ module.exports = {
 					if (!isValidPassword) return res.status(401).send({ auth: false, token: null });
 
 					let token = jwt.sign({ id: user.id }, jwtSecret, {
-						expiresIn: 86400
+						expiresIn: 604800
 					});
 
 					res.status(200).send({ auth: true, token: token, user: user });
