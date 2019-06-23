@@ -18,12 +18,12 @@ module.exports = mongoose.model("User", {
 	status: {
 		type: String,
 		enum: ["active", "inactive", "disabled", "locked", "expired"],
-		default: "inactive"
+		default: "active"
 	},
-	servers:[
+	servers: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Server",
+			ref: "Server"
 		}
 	],
 	lastConnection: { type: Date, default: Date.now },
