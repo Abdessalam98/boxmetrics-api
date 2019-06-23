@@ -37,7 +37,7 @@ pipeline {
       sh "docker push ${SERVER}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
       sh 'docker ps'
       sh 'docker stop boxmetrics-api-dev || true'
-      sh 'docker rm boxmetrics-api-dev'
+      sh 'docker rm boxmetrics-api-dev || true'
       sh "docker run -d -p 3000:3000 --env-file /srv/boxmetrics/api/.env --name boxmetrics-api-dev ${SERVER}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
      }
     }
@@ -57,7 +57,7 @@ pipeline {
        sh "docker push ${SERVER}:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
        sh 'ssh prod-boxmetrics docker ps'
        sh 'ssh prod-boxmetrics docker stop boxmetrics-api-prod || true'
-       sh 'ssh prod-boxmetrics docker rm boxmetrics-api-dev'
+       sh 'ssh prod-boxmetrics docker rm boxmetrics-api-prod || true'
        sh "ssh prod-boxmetrics docker run -d -p 8080:8080 --env-file /srv/boxmetrics/api/.env --name boxmetrics-api-prod ${REGISTRY}/boxmetrics-api:${env.BRANCH_NAME}-build-${env.BUILD_NUMBER}"
       }
      }
