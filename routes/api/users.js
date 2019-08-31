@@ -1,16 +1,23 @@
-const router = require("express").Router(),
-	UserController = require("../../controllers/UserController"),
-	jwt = require("jsonwebtoken"),
-	jwtSecret = require("../../config/jwt");
+const router = require("express").Router();
+const UserController = require("../../controllers/UserController");
+const jwt = require("jsonwebtoken");
+const jwtSecret = require("../../config/jwt");
 
 // Middleware
 router
 	.use((req, res, next) => {
 		const token = req.headers["x-access-token"];
-		if (!token) return res.status(403).send({ auth: false, message: "No token provided" });
+		if (!token)
+			return res
+				.status(403)
+				.send({ auth: false, message: "No token provided" });
 
 		jwt.verify(token, jwtSecret, function(err, decoded) {
-			if (err) return res.status(401).send({ auth: false, message: "Failed to authenticate token" });
+			if (err)
+				return res.status(401).send({
+					auth: false,
+					message: "Failed to authenticate token"
+				});
 			req.userId = decoded.id;
 			next();
 		});
@@ -27,9 +34,10 @@ router
 
 		jwt.verify(token, jwtSecret, function(err, decoded) {
 			if (err)
-				return res
-					.status(401)
-					.send({ auth: false, message: "Failed to authenticate token" });
+				return res.status(401).send({
+					auth: false,
+					message: "Failed to authenticate token"
+				});
 			req.userId = decoded.id;
 			next();
 		});
@@ -38,4 +46,5 @@ router
 	.get(UserController.show)
 	.put(UserController.update)
 	.delete(UserController.destroy);
+
 module.exports = router;

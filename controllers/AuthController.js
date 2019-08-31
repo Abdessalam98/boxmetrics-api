@@ -18,7 +18,6 @@ module.exports = {
 				res.status(500).json({
 					errors
 				});
-				return;
 			} else {
 				User.findOne({ email: email }, (error, user) => {
 					if (error) {
@@ -29,19 +28,31 @@ module.exports = {
 					}
 
 					if (user === null) {
-						res.status(404).json({ message: "User does not exist" });
+						res.status(404).json({
+							message: "User does not exist"
+						});
 						return;
 					}
 
-					let isValidPassword = bcrypt.compareSync(password, user.password);
+					let isValidPassword = bcrypt.compareSync(
+						password,
+						user.password
+					);
 
-					if (!isValidPassword) return res.status(401).send({ auth: false, token: null });
+					if (!isValidPassword)
+						return res
+							.status(401)
+							.send({ auth: false, token: null });
 
 					let token = jwt.sign({ id: user.id }, jwtSecret, {
 						expiresIn: 604800
 					});
 
-					res.status(200).send({ auth: true, token: token, user: user });
+					res.status(200).send({
+						auth: true,
+						token: token,
+						user: user
+					});
 				});
 			}
 		});
@@ -63,7 +74,6 @@ module.exports = {
 				res.status(500).json({
 					errors
 				});
-				return;
 			} else {
 				body.password = bcrypt.hashSync(body.password, salt);
 				const user = new User(body);

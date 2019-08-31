@@ -54,7 +54,6 @@ module.exports = {
 				res.status(500).json({
 					errors
 				});
-				return;
 			} else {
 				body.password = bcrypt.hashSync(body.password, salt);
 				const server = new Server(body);
@@ -63,7 +62,6 @@ module.exports = {
 						res.status(500).json({
 							errors: err
 						});
-						return;
 					}
 				});
 			}
@@ -101,7 +99,7 @@ module.exports = {
 			res.status(200).json(server);
 		});
 	},
-	update:(req,res) => {
+	update: (req, res) => {
 		const body = req.body;
 		Server.findByIdAndUpdate(
 			req.params.id,

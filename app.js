@@ -1,16 +1,16 @@
 // eslint-disable-next-line no-unused-vars
-const dotenv = require("dotenv").config(),
-	bodyParser = require("body-parser"),
-	createError = require("http-errors"),
-	express = require("express"),
-	cookieParser = require("cookie-parser"),
-	mongoose = require("mongoose"),
-	logger = require("morgan"),
-	helmet = require("helmet"),
-	expressValidator = require("express-validator"),
-	customValidators = require("./utils/customValidators"),
-	cors = require("cors"),
-	app = express();
+const dotenv = require("dotenv").config();
+const bodyParser = require("body-parser");
+const createError = require("http-errors");
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
+const logger = require("morgan");
+const helmet = require("helmet");
+const expressValidator = require("express-validator");
+const customValidators = require("./utils/customValidators");
+const cors = require("cors");
+const app = express();
 
 app.use(cors());
 
@@ -21,31 +21,41 @@ app.use(
 		extended: false
 	})
 );
+
 app.use(helmet());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 // database connection
-mongoose.connect(process.env.DB_URL, { useCreateIndex: true, useNewUrlParser: true }, (error) => {
-	if (error) {
-		throw error;
+mongoose.connect(
+	process.env.DB_URL,
+	{ useCreateIndex: true, useNewUrlParser: true },
+	error => {
+		if (error) {
+			throw error;
+		}
+		// eslint-disable-next-line no-console
+		console.log("🚀 Successfully connected to database !");
 	}
-	// eslint-disable-next-line no-console
-	console.log("🚀 Successfully connected to database !");
-});
-//express validator
+);
+
+// express validator
 app.use(
 	expressValidator({
 		customValidators
 	})
 );
+
 // routes
 app.use(require("./routes"));
+
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
 	next(createError(404, `Cannot ${req.method} ${req.originalUrl}`));
 });
+
 // error handler
 app.use((err, req, res) => {
 	res.status(err.status || 500);

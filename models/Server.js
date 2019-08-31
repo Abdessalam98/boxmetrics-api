@@ -27,7 +27,7 @@ module.exports = mongoose.model("Server", {
 		required: true
 	},
 	privateKey: {
-		type: String,
+		type: String
 	},
 	status: {
 		type: String,
@@ -36,7 +36,7 @@ module.exports = mongoose.model("Server", {
 	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: "User",
+		ref: "User"
 	},
 	lastConnection: { type: Date, default: Date.now },
 	createdOn: { type: Date, default: Date.now },

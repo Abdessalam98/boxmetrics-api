@@ -20,10 +20,10 @@ module.exports = mongoose.model("User", {
 		enum: ["active", "inactive", "disabled", "locked", "expired"],
 		default: "active"
 	},
-	servers:[
+	servers: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Server",
+			ref: "Server"
 		}
 	],
 	lastConnection: { type: Date, default: Date.now },
