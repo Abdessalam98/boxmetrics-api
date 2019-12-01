@@ -62,7 +62,9 @@ module.exports = {
 						res.status(500).json({
 							errors: err
 						});
+						return;
 					}
+					res.status(201).json(server);
 				});
 			}
 		});
@@ -82,7 +84,6 @@ module.exports = {
 					});
 					return;
 				}
-
 				res.status(204).json({});
 			});
 		});
