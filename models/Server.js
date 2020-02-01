@@ -45,23 +45,11 @@ const ServerSchema = new Schema({
 });
 
 ServerSchema.statics.findAll = function(fields) {
-	const { user = null } = fields;
+	const { user = null, isAdmin = false } = fields;
 
-	if (user) {
-		if (user.admin) {
-			return this.find({});
-		}
-
-		return this.find({})
-			.where("user")
-			.equals(user);
-	}
-
-	return {
-		exec: callback => {
-			callback();
-		}
-	};
+	// TODO: return fields based on admin scope
+	// default tmp
+	return this.find({});
 };
 
 module.exports = mongoose.model("Server", ServerSchema);
