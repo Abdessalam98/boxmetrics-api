@@ -20,56 +20,53 @@ module.exports = {
 		const valid = error == null;
 
 		if (!valid) {
-			res.json({
-				statusCode: 400,
-				error: "Bad request",
-				message: "Invalid request payload input."
-			}).status(400);
-			return;
+			return res
+				.json({
+					statusCode: 400,
+					error: "Bad request",
+					message: "Invalid request payload input."
+				})
+				.status(400);
 		}
 
 		User.findOne({ email }, (error, user) => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
 			}
 
 			if (!user) {
-				res.status(401).json({
+				return res.status(401).json({
 					statusCode: 401,
 					error: "Unauthorized",
 					message: "Failed to authenticate token."
 				});
-				return;
 			}
 
 			if (!verifyPassword(password, user.password)) {
-				res.status(401).json({
+				return res.status(401).json({
 					statusCode: 401,
 					error: "Unauthorized",
 					message: "Failed to authenticate token."
 				});
-				return;
 			}
 
 			user.lastConnection = Date.now();
 
 			user.save(error => {
 				if (error) {
-					res.status(500).json({
+					return res.status(500).json({
 						statusCode: 500,
 						error: "Internal error",
 						message: error.message
 					});
-					return;
 				}
 			});
 
-			res.status(200).json({
+			return res.status(200).json({
 				statusCode: 200,
 				data: {
 					token: createToken(user),
@@ -104,12 +101,11 @@ module.exports = {
 		const valid = error == null;
 
 		if (!valid) {
-			res.status(400).json({
+			return res.status(400).json({
 				statusCode: 400,
 				error: "Bad request",
 				message: "Invalid request payload input."
 			});
-			return;
 		}
 
 		const isUniqueUser = await verifyUniqueUser(
@@ -119,12 +115,11 @@ module.exports = {
 		);
 
 		if (isUniqueUser !== true) {
-			res.status(400).json({
+			return res.status(400).json({
 				statusCode: 400,
 				error: "Bad request",
 				message: "User already exists."
 			});
-			return;
 		}
 
 		const hash = hashPassword(password);
@@ -137,14 +132,13 @@ module.exports = {
 
 		user.save(error => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
 			}
-			res.status(201).json({
+			return res.status(201).json({
 				statusCode: 201,
 				data: {
 					token: createToken(user),

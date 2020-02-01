@@ -12,14 +12,13 @@ module.exports = {
 		const { user } = req.query;
 		Server.findAll({ user }).exec((error, servers) => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
 			}
-			res.status(200).json({
+			return res.status(200).json({
 				statusCode: 200,
 				data: {
 					servers
@@ -31,24 +30,22 @@ module.exports = {
 	getServerByID(req, res) {
 		Server.findById(req.params.id, (error, server) => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
 			}
 
 			if (!server) {
-				res.status(404).json({
+				return res.status(404).json({
 					statusCode: 404,
 					error: "Not Found",
 					message: "Server not found."
 				});
-				return;
 			}
 
-			res.status(200).json({
+			return res.status(200).json({
 				statusCode: 200,
 				data: {
 					server
@@ -84,23 +81,21 @@ module.exports = {
 		const valid = error == null;
 
 		if (!valid) {
-			res.status(400).json({
+			return res.status(400).json({
 				statusCode: 400,
 				error: "Bad request",
 				message: "Invalid request payload input."
 			});
-			return;
 		}
 
 		const isUniqueServer = await verifyUniqueServer({ name }, res, next);
 
 		if (isUniqueServer !== true) {
-			res.status(400).json({
+			return res.status(400).json({
 				statusCode: 400,
 				error: "Bad request",
 				message: "Server already exists."
 			});
-			return;
 		}
 
 		const hash = hashPassword(password);
@@ -116,14 +111,14 @@ module.exports = {
 
 		server.save(error => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
-			}
-			res.status(201).json({
+      }
+
+			return res.status(201).json({
 				statusCode: 201,
 				data: {
 					server
@@ -144,22 +139,21 @@ module.exports = {
 			{ new: true },
 			(error, server) => {
 				if (error) {
-					res.status(500).json({
+					return res.status(500).json({
 						statusCode: 500,
 						error: "Internal error",
 						message: error.message
 					});
-					return;
 				}
 				if (!server) {
-					res.status(404).json({
+					return res.status(404).json({
 						statusCode: 404,
 						error: "Not Found",
 						message: "Server not found."
 					});
-					return;
-				}
-				res.status(202).json({
+        }
+
+				return res.status(202).json({
 					statusCode: 202,
 					data: {
 						server
@@ -176,33 +170,30 @@ module.exports = {
 		// }
 		Server.findById(req.params.id, (error, server) => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
 			}
 
 			if (!server) {
-				res.status(404).json({
+				return res.status(404).json({
 					statusCode: 404,
 					error: "Not Found",
 					message: "Server not found."
 				});
-				return;
 			}
 
 			server.remove(error => {
 				if (error) {
-					res.status(500).json({
+					return res.status(500).json({
 						statusCode: 500,
 						error: "Internal error",
 						message: error.message
 					});
-					return;
 				}
-				res.status(204).json({});
+				return res.status(204).json({});
 			});
 		});
 	}

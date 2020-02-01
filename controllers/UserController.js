@@ -3,14 +3,13 @@ module.exports = {
 	getAllUsers(req, res) {
 		User.find({}).exec((error, users) => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
 			}
-			res.status(200).json({
+			return res.status(200).json({
 				statusCode: 200,
 				data: {
 					users
@@ -22,24 +21,22 @@ module.exports = {
 	getUserByID(req, res) {
 		User.findById(req.params.id, (error, user) => {
 			if (error) {
-				res.status(500).json({
+				return res.status(500).json({
 					statusCode: 500,
 					error: "Internal error",
 					message: error.message
 				});
-				return;
 			}
 
 			if (!user) {
-				res.status(404).json({
+				return res.status(404).json({
 					statusCode: 404,
 					error: "Not Found",
 					message: "User not found."
 				});
-				return;
 			}
 
-			res.status(200).json({
+			return res.status(200).json({
 				statusCode: 200,
 				data: {
 					user
@@ -60,24 +57,22 @@ module.exports = {
 			{ new: true },
 			(error, user) => {
 				if (error) {
-					res.status(500).json({
+					return res.status(500).json({
 						statusCode: 500,
 						error: "Internal error",
 						message: error.message
 					});
-					return;
 				}
 
 				if (!user) {
-					res.status(404).json({
+					return res.status(404).json({
 						statusCode: 404,
 						error: "Not Found",
 						message: "User not found."
 					});
-					return;
 				}
 
-				res.status(202).json({
+				return res.status(202).json({
 					statusCode: 202,
 					data: {
 						user
@@ -92,22 +87,25 @@ module.exports = {
 		// if (isAdmin) {
 		// 	// specific actions only for admins
 		// }
-		User.findById(req.params.id, (err, user) => {
-			if (err) {
-				res.status(500).json({
-					error: err
+		User.findById(req.params.id, (error, user) => {
+			if (error) {
+				return res.status(500).json({
+					statusCode: 500,
+					error: "Internal error",
+					message: error.message
 				});
-				return;
 			}
 
-			user.remove(err => {
-				if (err) {
-					res.status(500).json({
-						error: err
+			user.remove(error => {
+				if (error) {
+					return res.status(500).json({
+						statusCode: 500,
+						error: "Internal error",
+						message: error.message
 					});
-					return;
 				}
-				res.status(204).json({});
+
+				return res.status(204).json({});
 			});
 		});
 	}
