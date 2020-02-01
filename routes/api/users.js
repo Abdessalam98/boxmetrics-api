@@ -3,15 +3,13 @@ const verifyToken = require("../../middleware/verifyToken");
 const UserController = require("../../controllers/UserController");
 
 router
-	.use(verifyToken)
 	.route("/")
-	.get(UserController.index);
+	.get(UserController.getAllUsers);
 
 router
-	.use(verifyToken)
 	.route("/:id")
-	.get(UserController.show)
-	.put(UserController.update)
-	.delete(UserController.destroy);
+	.get(UserController.getUserByID)
+	.put(UserController.updateUserByID)
+	.delete(UserController.deleteUserByID);
 
 module.exports = router;

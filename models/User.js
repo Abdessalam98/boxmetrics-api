@@ -19,6 +19,11 @@ module.exports = mongoose.model("User", {
 		type: String,
 		enum: ["active", "inactive", "disabled", "locked", "expired"],
 		default: "active"
+  },
+  admin: {
+		type: Boolean,
+    required: true,
+    default: false
 	},
 	servers: [
 		{

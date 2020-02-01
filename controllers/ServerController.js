@@ -1,120 +1,209 @@
-const bcrypt = require("bcrypt");
-const salt = bcrypt.genSaltSync(10);
+const Joi = require("joi");
+const { hashPassword } = require("../utils/auth");
+const { verifyUniqueServer } = require("../utils/validator");
 const Server = require("../models/Server");
 
 module.exports = {
-	index: (req, res) => {
-		const { u } = req.query;
-		if (u) {
-			Server.find({})
-				.where("user")
-				.equals(u)
-				.exec((err, servers) => {
-					if (err) {
-						res.status(500).json({
-							error: err
-						});
-						return;
-					}
-					res.status(200).json({
-						count: servers.length,
-						servers
-					});
-				});
-		} else {
-			Server.find({}).exec((err, servers) => {
-				if (err) {
-					res.status(500).json({
-						error: err
-					});
-					return;
-				}
-				res.status(200).json({
-					count: servers.length,
-					servers
-				});
-			});
-		}
-	},
-	store: (req, res) => {
-		const body = req.body;
-
-		req.check("name", "Name is required").notEmpty();
-		req.check("name", "Name exists already").isUniqueServerName();
-		req.check("host", "Host is required").notEmpty();
-		req.check("port", "Port is required").notEmpty();
-		req.check("os", "OS is required").notEmpty();
-		req.check("username", "Username is required").notEmpty();
-		req.check("password", "Password is required").notEmpty();
-
-		// eslint-disable-next-line no-unused-vars
-		const validation = req.getValidationResult().then(err => {
-			const errors = err.array();
-			if (!err.isEmpty()) {
+	getAllServers(req, res) {
+		// const {body, isAdmin} = req;
+		// if (isAdmin) {
+		// 	// specific actions only for admins
+		// }
+		const { user } = req.query;
+		Server.findAll({ user }).exec((error, servers) => {
+			if (error) {
 				res.status(500).json({
-					errors
-				});
-			} else {
-				body.password = bcrypt.hashSync(body.password, salt);
-				const server = new Server(body);
-				server.save(err => {
-					if (err) {
-						res.status(500).json({
-							errors: err
-						});
-						return;
-					}
-					res.status(201).json(server);
-				});
-			}
-		});
-	},
-	destroy: (req, res) => {
-		Server.findById(req.params.id, (err, server) => {
-			if (err) {
-				res.status(500).json({
-					error: err
+					statusCode: 500,
+					error: "Internal error",
+					message: error.message
 				});
 				return;
 			}
-			server.remove(err => {
-				if (err) {
+			res.status(200).json({
+				statusCode: 200,
+				data: {
+					servers
+				},
+				message: ""
+			});
+		});
+	},
+	getServerByID(req, res) {
+		Server.findById(req.params.id, (error, server) => {
+			if (error) {
+				res.status(500).json({
+					statusCode: 500,
+					error: "Internal error",
+					message: error.message
+				});
+				return;
+			}
+
+			if (!server) {
+				res.status(404).json({
+					statusCode: 404,
+					error: "Not Found",
+					message: "Server not found."
+				});
+				return;
+			}
+
+			res.status(200).json({
+				statusCode: 200,
+				data: {
+					server
+				},
+				message: ""
+			});
+		});
+	},
+	async createServer(req, res) {
+		const {
+			name,
+			host,
+			port,
+			os,
+			username,
+			password,
+			privateKey
+		} = req.body;
+		const schema = Joi.object().keys({
+			name: Joi.string().required(),
+			host: Joi.string().required(),
+			port: Joi.string().required(),
+			os: Joi.string().required(),
+			username: Joi.string().required(),
+			password: Joi.string().required(),
+			privateKey: Joi.string()
+		});
+		const result = Joi.validate(
+			{ name, host, port, os, username, password, privateKey },
+			schema
+		);
+		const { value, error } = result;
+		const valid = error == null;
+
+		if (!valid) {
+			res.status(400).json({
+				statusCode: 400,
+				error: "Bad request",
+				message: "Invalid request payload input."
+			});
+			return;
+		}
+
+		const isUniqueServer = await verifyUniqueServer({ name }, res, next);
+
+		if (isUniqueServer !== true) {
+			res.status(400).json({
+				statusCode: 400,
+				error: "Bad request",
+				message: "Server already exists."
+			});
+			return;
+		}
+
+		const hash = hashPassword(password);
+		const server = new Server({
+			name,
+			host,
+			port,
+			os,
+			username,
+			password: hash,
+			privateKey
+		});
+
+		server.save(error => {
+			if (error) {
+				res.status(500).json({
+					statusCode: 500,
+					error: "Internal error",
+					message: error.message
+				});
+				return;
+			}
+			res.status(201).json({
+				statusCode: 201,
+				data: {
+					server
+				},
+				message: ""
+			});
+		});
+	},
+	updateServerByID(req, res) {
+		// const {body, isAdmin} = req;
+		// if (isAdmin) {
+		// 	// specific actions only for admins
+		// }
+		const body = req.body;
+		Server.findByIdAndUpdate(
+			req.params.id,
+			{ $set: body },
+			{ new: true },
+			(error, server) => {
+				if (error) {
 					res.status(500).json({
-						error: err
+						statusCode: 500,
+						error: "Internal error",
+						message: error.message
+					});
+					return;
+				}
+				if (!server) {
+					res.status(404).json({
+						statusCode: 404,
+						error: "Not Found",
+						message: "Server not found."
+					});
+					return;
+				}
+				res.status(202).json({
+					statusCode: 202,
+					data: {
+						server
+					},
+					message: ""
+				});
+			}
+		);
+	},
+	deleteServerByID(req, res) {
+		// const {body, isAdmin} = req;
+		// if (isAdmin) {
+		// 	// specific actions only for admins
+		// }
+		Server.findById(req.params.id, (error, server) => {
+			if (error) {
+				res.status(500).json({
+					statusCode: 500,
+					error: "Internal error",
+					message: error.message
+				});
+				return;
+			}
+
+			if (!server) {
+				res.status(404).json({
+					statusCode: 404,
+					error: "Not Found",
+					message: "Server not found."
+				});
+				return;
+			}
+
+			server.remove(error => {
+				if (error) {
+					res.status(500).json({
+						statusCode: 500,
+						error: "Internal error",
+						message: error.message
 					});
 					return;
 				}
 				res.status(204).json({});
 			});
 		});
-	},
-	show: (req, res) => {
-		Server.findById(req.params.id, (err, server) => {
-			if (err) {
-				res.status(500).json({
-					error: err
-				});
-				return;
-			}
-
-			res.status(200).json(server);
-		});
-	},
-	update: (req, res) => {
-		const body = req.body;
-		Server.findByIdAndUpdate(
-			req.params.id,
-			{ $set: body },
-			{ new: true },
-			(err, server) => {
-				if (err) {
-					res.status(500).json({
-						error: err
-					});
-					return;
-				}
-				res.status(202).json(server);
-			}
-		);
 	}
 };

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-module.exports = mongoose.model("Server", {
+const ServerSchema = new Schema({
 	name: {
 		type: String,
 		unique: true,
@@ -42,3 +43,25 @@ module.exports = mongoose.model("Server", {
 	createdOn: { type: Date, default: Date.now },
 	updatedOn: { type: Date, default: Date.now }
 });
+
+ServerSchema.statics.findAll = function(fields) {
+	const { user = null } = fields;
+
+	if (user) {
+		if (user.admin) {
+			return this.find({});
+		}
+
+		return this.find({})
+			.where("user")
+			.equals(user);
+	}
+
+	return {
+		exec: callback => {
+			callback();
+		}
+	};
+};
+
+module.exports = mongoose.model("Server", ServerSchema);

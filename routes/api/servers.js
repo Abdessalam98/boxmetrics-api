@@ -1,17 +1,15 @@
 const router = require("express").Router();
-const verifyToken = require("../../middleware/verifyToken");
 const ServerController = require("../../controllers/ServerController");
 
 router
-	.use(verifyToken)
 	.route("/")
-	.get(ServerController.index)
-	.post(ServerController.store);
+	.get(ServerController.getAllServers)
+	.post(ServerController.createServer);
 
 router
-	.use(verifyToken)
 	.route("/:id")
-	.get(ServerController.show)
-	.delete(ServerController.destroy);
+  .get(ServerController.getServerByID)
+  .post(ServerController.updateServerByID)
+	.delete(ServerController.deleteServerByID);
 
 module.exports = router;
