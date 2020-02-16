@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const { jwt: jwtOptions } = require("../config/auth");
-const { secret, tokenHeader } = jwtOptions;
+const { jwt: jwtConfig } = require("../config/auth");
+const { secret: jwtSecret, tokenHeader } = jwtConfig.options;
 const { withAuth } = require("../config/routes");
 const { startsWith } = require("../utils/helpers");
 const router = require("express").Router();
@@ -23,7 +23,7 @@ const auth = (req, res, next) => {
 		});
 	}
 
-	jwt.verify(token, secret, (error, decoded) => {
+	jwt.verify(token, jwtSecret, (error, decoded) => {
 		if (error) {
 			return res.status(401).json({
 				statusCode: 401,

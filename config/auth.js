@@ -8,5 +8,10 @@ module.exports = {
 			expiresIn: defaultsTo(env.JWT_EXPIRATION, 900000),
 			tokenHeader: defaultsTo(env.JWT_TOKEN_HEADER, "authorization")
 		}
+	},
+	cryptojs: {
+		options: {
+			secret: defaultsTo(env.CRYPTOJS_SECRET, "")
+		}
 	}
 };

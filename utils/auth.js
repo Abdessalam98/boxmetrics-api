@@ -1,14 +1,14 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { jwt: jwtOptions } = require("../config/auth");
-const { secret, expiresIn } = jwtOptions;
+const { jwt: jwtConfig } = require("../config/auth");
+const { secret: jwtSecret, expiresIn } = jwtConfig.options;
 
 module.exports = {
 	createToken(user) {
 		const { _id: id, username, email } = user;
 		const scope = user.admin ? "admin" : "";
 
-		return jwt.sign({ id, username, email, scope }, secret, {
+		return jwt.sign({ id, username, email, scope }, jwtSecret, {
 			algorithm: "HS256",
 			expiresIn
 		});

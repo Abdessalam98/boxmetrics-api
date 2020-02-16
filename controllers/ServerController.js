@@ -1,5 +1,8 @@
 const Joi = require("joi");
+const CryptoJS = require("crypto-js");
 const Server = require("../models/Server");
+const { cryptojs: cryptojsConfig } = require("../config/auth");
+const { secret: cryptoSecret } = cryptojsConfig.options;
 const { hashPassword } = require("../utils/auth");
 const { verifyUniqueServer } = require("../utils/validator");
 
@@ -57,9 +60,18 @@ module.exports = {
 			port,
 			os,
 			username,
-			password,
-			privateKey
+			password: cipherPassword,
+			privateKey: cipherPrivateKey
 		} = req.body;
+		const password = CryptoJS.AES.decrypt(
+			cipherPassword,
+			cryptoSecret
+		).toString(CryptoJS.enc.Utf8);
+		const privateKey = CryptoJS.AES.decrypt(
+			cipherPrivateKey,
+			cryptoSecret
+		).toString(CryptoJS.enc.Utf8);
+
 		const schema = Joi.object().keys({
 			name: Joi.string().required(),
 			host: Joi.string().required(),
