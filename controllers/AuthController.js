@@ -1,18 +1,17 @@
 const Joi = require("joi");
-const CryptoJS = require("crypto-js");
 const User = require("../models/User");
-const { cryptojs: cryptojsConfig } = require("../config/auth");
-const { secret: cryptoSecret } = cryptojsConfig.options;
-const { createToken, hashPassword, verifyPassword } = require("../utils/auth");
+const {
+	createToken,
+	hashPassword,
+	verifyPassword,
+	decryptAES
+} = require("../utils/auth");
 const { verifyUniqueUser } = require("../utils/validator");
 
 module.exports = {
 	async login(req, res) {
 		const { email, password: cipherPassword } = req.body;
-		const password = CryptoJS.AES.decrypt(
-			cipherPassword,
-			cryptoSecret
-    ).toString(CryptoJS.enc.Utf8);
+		const password = decryptAES(cipherPassword);
 
 		const schema = Joi.object().keys({
 			email: Joi.string()
@@ -91,10 +90,7 @@ module.exports = {
 			password: cipherPassword,
 			admin = false
 		} = req.body;
-		const password = CryptoJS.AES.decrypt(
-			cipherPassword,
-			cryptoSecret
-		).toString(CryptoJS.enc.Utf8);
+		const password = decryptAES(cipherPassword);
 
 		const schema = Joi.object().keys({
 			email: Joi.string()
@@ -116,7 +112,7 @@ module.exports = {
 			schema
 		);
 		const { value, error } = result;
-    const valid = error == null;
+		const valid = error == null;
 
 		if (!valid) {
 			return res.status(400).json({
