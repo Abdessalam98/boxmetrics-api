@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { secret, expiresIn } = require("../config/auth").jwt.options;
+const { jwt: jwtOptions } = require("../config/auth");
+const { secret, expiresIn } = jwtOptions;
 
 module.exports = {
 	createToken(user) {

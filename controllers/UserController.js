@@ -46,10 +46,6 @@ module.exports = {
 		});
 	},
 	updateUserByID(req, res) {
-		// const {body, isAdmin} = req;
-		// if (isAdmin) {
-		// 	// specific actions only for admins
-		// }
 		const body = req.body;
 		User.findByIdAndUpdate(
 			req.params.id,
@@ -83,10 +79,6 @@ module.exports = {
 		);
 	},
 	deleteUserByID(req, res) {
-		// const {body, isAdmin} = req;
-		// if (isAdmin) {
-		// 	// specific actions only for admins
-		// }
 		User.findById(req.params.id, (error, user) => {
 			if (error) {
 				return res.status(500).json({

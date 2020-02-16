@@ -1,15 +1,12 @@
 const defaultsTo = require("defaults-to");
 const env = require("./env");
 
-const auth = {
+module.exports = {
 	jwt: {
-		uid: "id",
 		options: {
 			secret: defaultsTo(env.JWT_SECRET, ""),
-			expiresIn: defaultsTo(env.JWT_EXPIRATION, 86400),
-			tokenHeader: defaultsTo(env.JWT_TOKEN_HEADER, "Authorization")
+			expiresIn: defaultsTo(env.JWT_EXPIRATION, 900000),
+			tokenHeader: defaultsTo(env.JWT_TOKEN_HEADER, "authorization")
 		}
 	}
 };
-
-module.exports = auth;

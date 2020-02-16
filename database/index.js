@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const getDatabaseURL = require("./helpers").getDatabaseURL;
-const dbConfig = require("../config/database").mongodb;
+const { getDatabaseURL } = require("./helpers");
+const { mongodb: dbConfig } = require("../config/database");
 const env = require("../config/env");
 
 module.exports = {

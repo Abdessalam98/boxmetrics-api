@@ -1,12 +1,14 @@
 const jwt = require("jsonwebtoken");
-const { secret, tokenHeader } = require("../config/auth").jwt.options;
+const { jwt: jwtOptions } = require("../config/auth");
+const { secret, tokenHeader } = jwtOptions;
 const { withAuth } = require("../config/routes");
+const { startsWith } = require("../utils/helpers");
 const router = require("express").Router();
 
-const verifyToken = (req, res, next) => {
+const auth = (req, res, next) => {
 	if (
 		req.originalUrl &&
-		!withAuth.some(route => route.test(req.originalUrl))
+		!withAuth.some(route => startsWith(req.originalUrl, route))
 	) {
 		next();
 		return;
@@ -34,4 +36,4 @@ const verifyToken = (req, res, next) => {
 	});
 };
 
-module.exports = verifyToken;
+module.exports = auth;

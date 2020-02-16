@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const prefix = "v1";
+const { apiPrefix } = require("../config/app");
 
-router.use(`/api/${prefix}`, require("./api"));
+router.use(apiPrefix, require("./api"));
 module.exports = router;

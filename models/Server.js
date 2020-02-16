@@ -46,9 +46,6 @@ const ServerSchema = new Schema({
 
 ServerSchema.statics.findAll = function(fields) {
 	const { user = null, isAdmin = false } = fields;
-
-	// TODO: return fields based on admin scope
-	// default tmp
 	return this.find({});
 };
 

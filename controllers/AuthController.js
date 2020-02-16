@@ -1,6 +1,6 @@
 const Joi = require("joi");
-const { createToken, hashPassword, verifyPassword } = require("../utils/auth");
 const User = require("../models/User");
+const { createToken, hashPassword, verifyPassword } = require("../utils/auth");
 const { verifyUniqueUser } = require("../utils/validator");
 
 module.exports = {

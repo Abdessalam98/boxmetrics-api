@@ -1,14 +1,10 @@
 const Joi = require("joi");
+const Server = require("../models/Server");
 const { hashPassword } = require("../utils/auth");
 const { verifyUniqueServer } = require("../utils/validator");
-const Server = require("../models/Server");
 
 module.exports = {
 	getAllServers(req, res) {
-		// const {body, isAdmin} = req;
-		// if (isAdmin) {
-		// 	// specific actions only for admins
-		// }
 		const { user } = req.query;
 		Server.findAll({ user }).exec((error, servers) => {
 			if (error) {
@@ -116,7 +112,7 @@ module.exports = {
 					error: "Internal error",
 					message: error.message
 				});
-      }
+			}
 
 			return res.status(201).json({
 				statusCode: 201,
@@ -128,10 +124,6 @@ module.exports = {
 		});
 	},
 	updateServerByID(req, res) {
-		// const {body, isAdmin} = req;
-		// if (isAdmin) {
-		// 	// specific actions only for admins
-		// }
 		const body = req.body;
 		Server.findByIdAndUpdate(
 			req.params.id,
@@ -151,7 +143,7 @@ module.exports = {
 						error: "Not Found",
 						message: "Server not found."
 					});
-        }
+				}
 
 				return res.status(202).json({
 					statusCode: 202,
@@ -164,10 +156,6 @@ module.exports = {
 		);
 	},
 	deleteServerByID(req, res) {
-		// const {body, isAdmin} = req;
-		// if (isAdmin) {
-		// 	// specific actions only for admins
-		// }
 		Server.findById(req.params.id, (error, server) => {
 			if (error) {
 				return res.status(500).json({
